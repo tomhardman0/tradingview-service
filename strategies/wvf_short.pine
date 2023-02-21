@@ -1,0 +1,35 @@
+//@version=5
+strategy('WVF_SHORT_STRATEGY', overlay=false, pyramiding=1, initial_capital=5000, commission_type=strategy.commission.cash_per_order, commission_value=0, slippage=2, currency='GBP')
+pd = input(22, title='LookBack Period Standard Deviation High')
+bbl = input(20, title='Bolinger Band Length')
+mult = input.float(2.0, minval=1, maxval=5, title='Bollinger Band Standard Devaition Up')
+lb = input(50, title='Look Back Period Percentile High')
+ph = input(.95, title='Highest Percentile - 0.90=90%, 0.95=95%, 0.99=99%')
+pl = input(1.01, title='Lowest Percentile - 1.10=90%, 1.05=95%, 1.01=99%')
+hp = input(false, title='Show High Range - Based on Percentile and LookBack Period?')
+sd = input(false, title='Show Standard Deviation Line?')
+threshold = input(0.01, title='WVF threshold for placing orders - default 0.01')
+target_profit = input(10.0, title='Target profit distance')
+
+wvf = (ta.highest(close, pd) - low) / ta.highest(close, pd) * 100
+
+sDev = mult * ta.stdev(wvf, bbl)
+midLine = ta.sma(wvf, bbl)
+lowerBand = midLine - sDev
+upperBand = midLine + sDev
+
+rangeHigh = ta.highest(wvf, lb) * ph
+rangeLow = ta.lowest(wvf, lb) * pl
+
+should_enter = wvf <= threshold and ( wvf <= lowerBand or wvf <= rangeLow )
+col = should_enter ? color.lime : color.gray
+
+if (should_enter)
+    alert('{"requestKey":"topsecretkey","direction":"SELL","pair":"' + syminfo.ticker + '","price":' + str.tostring(close) +'}', alert.freq_once_per_bar)
+    strategy.entry('enter_short', strategy.short, 10000)
+    strategy.exit('exit_short', from_entry='enter_short', profit=target_profit)
+
+plot(hp and rangeHigh ? rangeHigh : na, title='Range High Percentile', style=plot.style_line, linewidth=4, color=color.new(color.orange, 0))
+plot(hp and rangeLow ? rangeLow : na, title='Range High Percentile', style=plot.style_line, linewidth=4, color=color.new(color.orange, 0))
+plot(wvf, title='Williams Vix Fix', style=plot.style_histogram, linewidth=4, color=col)
+plot(sd and upperBand ? upperBand : na, title='Upper Band', style=plot.style_line, linewidth=3, color=color.new(color.aqua, 0))

@@ -1,0 +1,4 @@
+tradingview-service-venv
+.env
+.vscode
+__pycache__
