@@ -14,6 +14,7 @@ async def otc_handler(trigger: Trigger, request: Request):
     direction = trigger.direction
     price = trigger.price
     pair = trigger.pair
+    source = trigger.source
 
     if request_key is None or request_key != settings.request_key:
         raise HTTPException(status_code=401)
@@ -34,6 +35,7 @@ async def otc_handler(trigger: Trigger, request: Request):
             direction=direction,
             price=price,
             pair=pair,
+            source=source,
         )
         deal_reference = await ig.create_order(pair, direction, price)
         logger.info(
