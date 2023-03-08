@@ -6,7 +6,7 @@ from src.settings import settings
 from src.utils.logging import structlog
 from src.types.trigger import Trigger
 from src.services import ig as ig_api
-from src.routes import ig as ig_routes
+from src.routes import ig as ig_routes, oanda as oanda_routes
 
 logger = structlog.getLogger(__name__)
 
@@ -42,3 +42,8 @@ async def ig_otc(trigger: Trigger, request: Request):
 @app.post("/ig/reauth")
 async def ig_reauth(trigger: Trigger, request: Request):
     return await ig_routes.reauth_handler(trigger, request)
+
+
+@app.post("/oanda/order")
+async def oanda_order(trigger: Trigger, request: Request):
+    return await oanda_routes.order_handler(trigger, request)
