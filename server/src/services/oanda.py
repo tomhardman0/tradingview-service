@@ -35,23 +35,21 @@ async def create_order(pair, direction, price):
 
 def create_open_order_request_body(pair, direction, price):
     instrument = f"{pair[:3]}_{pair[3:]}"
-    price_str = str(price)
     good_till_date = (datetime.now() + timedelta(seconds=10)).timestamp()
-    negative_decimal_places = Decimal(price_str).as_tuple().exponent
-    take_profit_distance = 2 * 10 ** negative_decimal_places
+    take_profit_distance = "0.002" if "JPY" in pair else "0.00002"
 
     return {
         "order": {
             "type": "LIMIT",
             "instrument": instrument,
             "units": settings.order_size if direction == "BUY" else -settings.order_size,
-            "price": price_str,
+            "price": str(price),
             "timeInForce": "GTD",
             "gtdTime": good_till_date,
             "positionFill": "DEFAULT",
             "triggerCondition": "DEFAULT",
             "takeProfitOnFill": {
-                "distance": str(take_profit_distance)
+                "distance": take_profit_distance
             }
         }
     }
