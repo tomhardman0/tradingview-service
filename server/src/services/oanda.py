@@ -1,5 +1,6 @@
 import requests_async as requests
 from datetime import datetime, timedelta
+from decimal import *
 
 from src.settings import settings
 from src.utils.logging import structlog
@@ -34,20 +35,23 @@ async def create_order(pair, direction, price):
 
 def create_open_order_request_body(pair, direction, price):
     instrument = f"{pair[:3]}_{pair[3:]}"
+    price_str = str(price)
     good_till_date = (datetime.now() + timedelta(seconds=10)).timestamp()
+    negative_decimal_places = Decimal(price_str).as_tuple().exponent
+    take_profit_distance = 2 * 10 ** negative_decimal_places
 
     return {
         "order": {
             "type": "LIMIT",
             "instrument": instrument,
             "units": settings.order_size if direction == "BUY" else -settings.order_size,
-            "price": price,
+            "price": price_str,
             "timeInForce": "GTD",
             "gtdTime": good_till_date,
             "positionFill": "DEFAULT",
             "triggerCondition": "DEFAULT",
             "takeProfitOnFill": {
-                "distance": 1
+                "distance": str(take_profit_distance)
             }
         }
     }
