@@ -7,7 +7,6 @@ from src.settings import settings
 from src.utils.logging import structlog
 from src.types.settings import Settings
 
-BASE_URL = settings.broker_base_url
 PAIR_MAP = {
     "GBPUSD": {"epic": "CS.D.GBPUSD.TODAY.IP", "multiplier": 10000},
     "GBPJPY": {"epic": "CS.D.GBPJPY.TODAY.IP", "multiplier": 100},
@@ -26,8 +25,8 @@ def create_base_headers(settings: Settings):
     return {
         "Content-Type": "application/json; charset=UTF-8",
         "Accept": "application/json; charset=UTF-8",
-        "X-IG-API-KEY": settings.broker_api_key,
-        "IG-ACCOUNT-ID": settings.broker_account_id,
+        "X-IG-API-KEY": settings.ig_api_key,
+        "IG-ACCOUNT-ID": settings.ig_account_id,
         "X-SECURITY-TOKEN": settings.security_token,
         "CST": settings.cst,
     }
@@ -35,14 +34,14 @@ def create_base_headers(settings: Settings):
 
 async def get_credentials(request: Union[Request, None] = None):
     payload = {
-        "identifier": settings.broker_username,
-        "password": settings.broker_password,
+        "identifier": settings.ig_username,
+        "password": settings.ig_password,
     }
     headers = {**create_base_headers(settings), "Version": "2"}
 
     try:
         r = await requests.post(
-            f"{settings.broker_base_url}/session", json=payload, headers=headers
+            f"{settings.ig_base_url}/session", json=payload, headers=headers
         )
         headers = r.headers
         return headers["X-SECURITY-TOKEN"], headers["CST"]
@@ -62,7 +61,7 @@ async def create_order(pair, direction, price):
     }
 
     r = await requests.post(
-        f"{settings.broker_base_url}/workingorders/otc",
+        f"{settings.ig_base_url}/workingorders/otc",
         json=create_open_order_request_body(pair, direction, price),
         headers=headers,
     )
