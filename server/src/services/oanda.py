@@ -42,7 +42,7 @@ def create_open_order_request_body(pair, direction, price):
         "order": {
             "type": "LIMIT",
             "instrument": instrument,
-            "units": "500" if direction == "BUY" else "-500",
+            "units": "5000" if direction == "BUY" else "-5000",
             "price": str(price),
             "timeInForce": "GTD",
             "gtdTime": good_till_date,
