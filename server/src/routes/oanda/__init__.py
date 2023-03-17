@@ -35,7 +35,7 @@ async def order_handler(trigger: Trigger, request: Request):
             price=price,
             pair=pair,
         )
-        order_id = await oanda.create_order(pair, direction, price)
+        order_id = await oanda.create_order(pair, direction)
 
         if order_id is None:
             raise HTTPException(status_code=500)

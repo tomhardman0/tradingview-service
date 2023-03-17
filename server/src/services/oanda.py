@@ -16,10 +16,10 @@ def create_base_headers():
     }
 
 
-async def create_order(pair, direction, price):
+async def create_order(pair, direction):
     r = await requests.post(
         f"{settings.oanda_base_url}/v3/accounts/{settings.oanda_account_id}/orders",
-        json=create_open_order_request_body(pair, direction, price),
+        json=create_open_order_request_body(pair, direction),
         headers=create_base_headers(),
     )
     body = r.json()
@@ -30,21 +30,17 @@ async def create_order(pair, direction, price):
         logger.error("Error placing order", response_body=body)
 
 
-def create_open_order_request_body(pair, direction, price):
+def create_open_order_request_body(pair, direction):
     instrument = f"{pair[:3]}_{pair[3:]}"
-    good_till_date = (datetime.now() + timedelta(seconds=10)).timestamp()
     take_profit_distance = "0.02" if "JPY" in pair else "0.0002"
 
     return {
         "order": {
-            "type": "LIMIT",
+            "type": "MARKET",
             "instrument": instrument,
             "units": "15000" if direction == "BUY" else "-15000",
-            "price": str(price),
-            "timeInForce": "GTD",
-            "gtdTime": good_till_date,
-            "positionFill": "DEFAULT",
-            "triggerCondition": "DEFAULT",
+            "timeInForce": "FOK",
+            "positionFill": "OPEN_ONLY",
             "takeProfitOnFill": {"distance": take_profit_distance},
         }
     }
