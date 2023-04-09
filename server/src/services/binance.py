@@ -21,8 +21,8 @@ def calc_take_profit_price(price, direction):
     return price + profit_distance if direction == "BUY" else price - profit_distance
 
 
-def create_order_request_params(direction, pair, quantity, price, take_profit_price):
-    return urlencode({
+def create_order_request_params(direction, pair, quantity, price, take_profit_price, is_margin=False):
+    data = {
         "type": "TAKE_PROFIT_LIMIT",
         "side": direction,
         "symbol": pair,
@@ -32,7 +32,15 @@ def create_order_request_params(direction, pair, quantity, price, take_profit_pr
         "stopPrice": take_profit_price,
         "recvWindow": 10000,  # good for 10 seconds. May actually be too much in crypto
         "timestamp": int(datetime.now().timestamp() * 1000)
-    })
+    }
+
+    if is_margin:
+        data["sideEffectType"] = "AUTO_REPAY"
+
+    if not is_margin:
+        data["selfTradePreventionMode"] = "NONE"
+
+    return urlencode(data)
 
 
 def create_base_headers():
@@ -87,12 +95,12 @@ async def get_account_information():
 
 
 def create_margin_order_request_params(pair, direction, price):
-    margin_rate = 10
+    margin_rate = 5
     margin_order_size = settings.crypto_order_size * margin_rate
     quantity = round(margin_order_size / price, 5)
 
     params = create_order_request_params(
-        direction, pair, quantity, price, calc_take_profit_price(price, direction))
+        direction, pair, quantity, price, calc_take_profit_price(price, direction), True)
 
     return f"{params}&signature={create_signature(params)}"
 
@@ -101,6 +109,6 @@ def create_spot_order_request_params(pair, direction, price):
     quantity = round(settings.crypto_order_size / price, 5)
 
     params = create_order_request_params(
-        direction, pair, quantity, price, calc_take_profit_price(price, direction))
+        direction, pair, quantity, price, calc_take_profit_price(price, direction), False)
 
     return f"{params}&signature={create_signature(params)}"
