@@ -16,6 +16,11 @@ class Settings(BaseSettings):
     oanda_account_id: str
     oanda_base_url: str
 
+    crypto_order_size: float = 3000  # in USD
+    binance_api_key: str
+    binance_api_secret: str
+    binance_base_url: str
+
     # populated dynamically at startup
     security_token: str = ""
     cst: str = ""
