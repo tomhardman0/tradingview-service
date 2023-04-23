@@ -6,7 +6,7 @@ from src.settings import settings
 from src.utils.logging import structlog
 from src.types.trigger import Trigger
 from src.services import ig as ig_api
-from src.routes import ig as ig_routes, oanda as oanda_routes, binance as binance_routes
+from src.routes import ig as ig_routes, oanda as oanda_routes, bybit as bybit_routes
 
 logger = structlog.getLogger(__name__)
 
@@ -49,16 +49,6 @@ async def oanda_order(trigger: Trigger, request: Request):
     return await oanda_routes.order_handler(trigger, request)
 
 
-@app.post("/binance/order/spot")
-async def binance_spot_order(trigger: Trigger, request: Request):
-    return await binance_routes.spot_order_handler(trigger, request)
-
-
-@app.post("/binance/order/margin")
-async def binance_margin_order(trigger: Trigger, request: Request):
-    return await binance_routes.margin_order_handler(trigger, request)
-
-
-@app.get("/binance/account")
-async def binance_account_info():
-    return await binance_routes.get_account_information()
+@app.post("/bybit/order")
+async def bybit_order(trigger: Trigger, request: Request):
+    return await bybit_routes.order_handler(trigger, request)
