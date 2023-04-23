@@ -15,7 +15,7 @@ session = HTTP(
 async def create_order(pair, direction, price):
     response = session.place_order(
         category="linear",
-        symbol=pair,
+        symbol=pair.replace(".P", ""),
         side="Buy" if direction == "BUY" else "Sell",
         orderType="Limit",
         qty=f"{calc_contract_quantity(price)}",
