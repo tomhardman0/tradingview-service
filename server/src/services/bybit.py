@@ -37,5 +37,5 @@ def calc_contract_quantity(price):
 
 
 def calc_take_profit_price(price, direction):
-    profit_distance = 5
+    profit_distance = 15
     return price + profit_distance if direction == "BUY" else price - profit_distance
