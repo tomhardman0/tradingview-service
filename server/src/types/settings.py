@@ -17,6 +17,7 @@ class Settings(BaseSettings):
     oanda_base_url: str
 
     crypto_order_size: float = 3000  # in USD
+    crypto_profit_distance: float = 15  # in USD
     bybit_api_key: str
     bybit_api_secret: str
 

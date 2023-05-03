@@ -8,7 +8,7 @@ logger = structlog.getLogger(__name__)
 session = HTTP(
     api_key=settings.bybit_api_key,
     api_secret=settings.bybit_api_secret,
-    testnet=settings.env == "staging"
+    testnet=settings.env == "staging",
 )
 
 
@@ -37,5 +37,5 @@ def calc_contract_quantity(price):
 
 
 def calc_take_profit_price(price, direction):
-    profit_distance = 15
+    profit_distance = settings.crypto_profit_distance
     return price + profit_distance if direction == "BUY" else price - profit_distance
