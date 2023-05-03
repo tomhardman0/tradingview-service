@@ -16,6 +16,12 @@ class Settings(BaseSettings):
     oanda_account_id: str
     oanda_base_url: str
 
+    crypto_order_size: float = 3000  # in USD
+    bybit_api_key: str
+    bybit_api_secret: str
+
+    env: str = "staging"
+
     # populated dynamically at startup
     security_token: str = ""
     cst: str = ""

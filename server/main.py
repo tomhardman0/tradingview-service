@@ -6,7 +6,7 @@ from src.settings import settings
 from src.utils.logging import structlog
 from src.types.trigger import Trigger
 from src.services import ig as ig_api
-from src.routes import ig as ig_routes, oanda as oanda_routes
+from src.routes import ig as ig_routes, oanda as oanda_routes, bybit as bybit_routes
 
 logger = structlog.getLogger(__name__)
 
@@ -47,3 +47,8 @@ async def ig_reauth(trigger: Trigger, request: Request):
 @app.post("/oanda/order")
 async def oanda_order(trigger: Trigger, request: Request):
     return await oanda_routes.order_handler(trigger, request)
+
+
+@app.post("/bybit/order")
+async def bybit_order(trigger: Trigger, request: Request):
+    return await bybit_routes.order_handler(trigger, request)
